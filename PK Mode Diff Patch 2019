@@ -1,0 +1,50 @@
+atcommand.cpp
+  Find : 
+    ACMD_FUNC(request)
+
+  Add below: // after the function of request add new cmd_func
+    ACMD_FUNC(pk)
+    {
+    if( map_getmapflag(sd->bl.m, MF_PVP) || map_getmapflag(sd->bl.m, MF_GVG) || map_getmapflag(sd->bl.m, MF_GVG_CASTLE) || map_getmapflag(sd->bl.m, MF_GVG_DUNGEON) ) {
+  		clif_displaymessage(fd, "You can only change your PK state on non-gvg/pvp maps.");
+  		return -1;
+		}
+    nullpo_retr(-1, sd);
+    if (!sd->state.pk_mode) {
+      sd->state.pk_mode = 1;
+      clif_displaymessage(sd->fd, "[Player Kill Mode]: OFF");
+    }
+    else {
+      sd->state.pk_mode = 0;
+      clif_displaymessage(sd->fd, "[Player Kill Mode]: ON");
+		}
+    return 0;
+}
+  
+// /// /// // /// ///
+also in atcommand.cpp
+  Find:
+    ACMD_DEF(jailfor),
+    
+  Add Below:
+    ACMD_DEF(pk),
+    
+// --------------------------------------------
+battle.cpp
+  Find: 
+      return 0; // You can't target anything out of your duel
+  }
+  
+  Add below:
+      else if (map_getmapflag(sd->bl.m, MF_PVP) && sd->state.pk_mode && t_bl->type != BL_MOB)
+          return 0;
+
+    
+// --------------------------------------------
+pc.hpp
+  Find:
+    unsigned int warping : 1;//states whether you're in the middle of a warp processing
+    
+  Add Below:
+    unsigned int pk_mode : 1; //[malufett]
+    
