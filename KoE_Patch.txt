@@ -1,0 +1,38 @@
+// ------------------------
+// KoE Diff Patch 2020 - HPJ
+// ------------------------
+// ------------------------------------------------------------------------------------------------
+[ castle_db.txt ]
+Find:
+ 31,arug_cas03,Horn,Manager#arug_cas03			// kRO : Horn
+ 32,arug_cas04,Gefn,Manager#arug_cas04			// kRO : Gefn
+ 33,arug_cas05,Bandis,Manager#arug_cas05			// kRO : Bandis
+Add Below:
+ 100,guild_vs1,koe,koe						// King of Emperium
+
+// ------------------------------------------------------------------------------------------------
+[ battle.cpp ]
+Find: 
+ 	if( (s_bl = battle_get_master(src)) == NULL )
+ 		s_bl = src;
+
+Add Below:
+	if ( s_bl->type == BL_PC ) {
+		switch( t_bl->type ) {
+			case BL_MOB: // Source => PC, Target => MOB
+				if ( pc_has_permission((TBL_PC*)s_bl, PC_PERM_DISABLE_PVM) )
+					return 0;
+				break;
+			case BL_PC:
+				if (pc_has_permission((TBL_PC*)s_bl, PC_PERM_DISABLE_PVP))
+					return 0;
+				break;
+			default:/* anything else goes */
+				break;
+		}
+	}
+
+// ------------------------------------------------------------------------------------------------
+[ battle.hpp ]
+Add:
+	#include "mapreg.hpp"
